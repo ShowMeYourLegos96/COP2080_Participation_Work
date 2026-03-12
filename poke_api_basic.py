@@ -1,8 +1,12 @@
 import requests
-import pandas as pd 
+import pandas as pd
+import streamlit 
+
 
 names_input = input("Enter pokemon names, use commas: ") or "Charizard"
 
+
+@st.cache_data
 def get_stats(name):
   r = requests.get(f"https://pokeapi.co/api/v2/pokemon/{name.lower().strip()}")
   if r.status_code == 200:
@@ -19,8 +23,22 @@ def get_stats(name):
     return None
 
 # Removed: print(get_stats(names_input)) 
-
 names = [n.strip() for n in names_input.split(",") if n.strip()]
+if st.button("Compare"):
+    names = [n.strip() for n in names_input.split(",") if n.strip()]
+    rows = {}
+    for name in names:
+        stats = get_stats(name)
+        if stats:
+            rows[name.title()] = stats
+        else:
+            st.warning(f"'{name}' not found — skipping.")
+
+    if rows:
+        df = pd.DataFrame(rows).T
+        df.columns = [c.replace("-", " ").title() for c in df.columns]
+
+
 rows = {}
 for name in names:
   stats = get_stats(name)
@@ -30,6 +48,6 @@ for name in names:
   if rows:
     df = pd.DataFrame(rows)
     df.columns = [c.replace("-", " ").title() for c in df.columns]
-    print(df)
+    #print(df)
 
 
