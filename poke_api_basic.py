@@ -1,9 +1,9 @@
 import requests
 import pandas as pd
-import streamlit 
+import streamlit as st
 
-
-names_input = input("Enter pokemon names, use commas: ") or "Charizard"
+st.title("Pokemon Matrix")
+names_input = st.text_input("Enter pokemon names, use commas: ") or "Charizard"
 
 
 @st.cache_data
@@ -37,17 +37,12 @@ if st.button("Compare"):
     if rows:
         df = pd.DataFrame(rows).T
         df.columns = [c.replace("-", " ").title() for c in df.columns]
+        st.dataframe(df)
+        st.bar_chart(df)
 
 
-rows = {}
-for name in names:
-  stats = get_stats(name)
-  if stats:
-    rows[name.title()] = stats # capitalize 1st letter
-    print(f"rows: {rows}")
-  if rows:
-    df = pd.DataFrame(rows)
-    df.columns = [c.replace("-", " ").title() for c in df.columns]
-    #print(df)
+
+ 
+ 
 
 
